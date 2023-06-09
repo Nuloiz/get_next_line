@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
-#include <fcntl.h>
+/*#include <stdio.h>
+#include <fcntl.h>*/
 
 static void	nl_buffer(char *buf, size_t i)
 {
@@ -42,6 +42,7 @@ static char	*next_line(char *buf)
 		if (buf[i] == '\0')
 		{
 			nl[i] = '\0';
+			buf[0] = '\0';
 			return (nl);
 		}
 		nl[i] = buf[i];
@@ -61,7 +62,7 @@ char	*get_next_line(int fd)
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	i = (int)read(fd, buf, BUFFER_SIZE);
-	if (i < 0)
+	if (i <= 0)
 		return (NULL);
 	zs = next_line(buf);
 	if (!zs)
@@ -69,7 +70,7 @@ char	*get_next_line(int fd)
 	return (zs);
 }
 
-int	main(void)
+/*int	main(void)
 {
 	char	*line;
 	int		i;
@@ -83,7 +84,7 @@ int	main(void)
 	i = 1;
 	while (i < 7)
 	{
-		line = get_next_line(fd1);
+		line = get_next_line(fd3);
 		printf("line [%02d]: %s\n", i, line);
 		free(line);
 		i++;
@@ -93,4 +94,4 @@ int	main(void)
 	close(fd3);
 	return (0);
 }
-
+*/
