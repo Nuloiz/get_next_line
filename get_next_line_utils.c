@@ -17,45 +17,43 @@ size_t	ft_strlen(const char *s)
 	size_t	i;
 
 	i = 0;
+	if (!s)
+		return (0);
 	while (s[i] != '\0')
 		i++;
 	return (i);
 }
 
-
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
-	int		i;
-	int		j;
-	char	*c;
+	size_t	i;
+	size_t	j;
+	int		k;
+	char	*str;
 
-	i = 0;
-	j = 0;
-	c = (char *)malloc(ft_strlen(s1) + ft_strlen(s2));
-	if (s1 && s2 && c)
+	k = 0;
+	if (!s1)
 	{
-		while (s1[i])
-		{
-			c[i] = s1[i];
-			i++;
-		}
-		while (s2[j])
-		{
-			c[i] = s2[j];
-			i++;
-			j++;
-		}
-		c[i] = '\0';
-		return (c);
+		s1 = (char *)malloc(1 * sizeof(char));
+		s1[0] = '\0';
+		k = 1;
 	}
-	return (0);
-}
-
-int	ft_isascii(int c)
-{
-	if (c < 0 || c > 127)
-		return (0);
-	return (1);
+	if (!s2)
+		return (NULL);
+	str = malloc(sizeof(char) * ((ft_strlen(s1) + ft_strlen(s2)) + 1));
+	if (str == NULL)
+		return (NULL);
+	i = -1;
+	j = 0;
+	if (s1)
+		while (s1[++i] != '\0')
+			str[i] = s1[i];
+	while (s2[j] != '\0')
+		str[i++] = s2[j++];
+	str[ft_strlen(s1) + ft_strlen(s2)] = '\0';
+	if (k == 1)
+		free(s1);
+	return (str);
 }
 
 char	*ft_strchr(const char *s, int c)
@@ -66,7 +64,7 @@ char	*ft_strchr(const char *s, int c)
 
 	j = 0;
 	i = (unsigned char)c;
-	if (ft_isascii(i) == 0)
+	if (c < 0 || c > 127)
 		return (0);
 	mem = (char *)s;
 	while (j <= ft_strlen(s))
