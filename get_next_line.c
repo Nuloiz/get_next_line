@@ -6,7 +6,7 @@
 /*   By: nschutz <nschutz@student.42wolfsburg.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 11:48:35 by nschutz           #+#    #+#             */
-/*   Updated: 2023/06/12 14:05:07 by nschutz          ###   ########.fr       */
+/*   Updated: 2023/06/13 10:14:51 by nschutz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,9 +90,9 @@ int	main(void)
 	fd2 = open("tests/test2.txt", O_RDONLY);
 	fd3 = open("tests/test3.txt", O_RDONLY);
 	i = 1;
-	while (i < 7)
+	while (i < 8)
 	{
-		line = get_next_line(fd1);
+		line = get_next_line(fd3);
 		printf("line [%02d]: %s\n", i, line);
 		free(line);
 		i++;
@@ -103,7 +103,7 @@ int	main(void)
 	return (0);
 }
 
-static char	*next_line(char *buf, int fd)
+static int	next_line(char *buf, int fd)
 {
 	char	*nl;
 	int		i;
@@ -120,10 +120,10 @@ static char	*next_line(char *buf, int fd)
 			free(nl);
 			return (0);
 		}
-		nl = ft_strjoin(buf, nl);
 	}
-	nl[i] = '\0';
-	return (nl);
+	buf = ft_strjoin(buf, nl);
+	buf[i] = '\0';
+	return (1);
 }
 
 static char	*give_line(char *buf)
@@ -135,50 +135,49 @@ static char	*give_line(char *buf)
 	zs = malloc(ft_strlen(buf) - ft_strlen(ft_strchr(buf, '\n')) + 1);
 	if (!zs)
 		return (0);
-	while (buf[i - 1] != '\n' && buf[i] != '\0')
+	while (buf[i] != '\n' && buf[i] != '\0')
 	{
 		zs[i] = buf[i];
 		i++;
 	}
-	zs[i + 1] = '\0';
+	zs[i] = '\0';
 	return (zs);
 }
 
-static char	*nl_buffer(char *buf)
+static void	nl_buffer(char *buf)
 {
-	int		i;
+	size_t	i;
 	int		j;
-	char	*nb;
 
 	i = 0;
 	j = 0;
-	while (buf[i] != '\n' && buf[i] != '\0')
-		i++;
-	nb = (char *)malloc(ft_strlen(buf) - i + 1);
-	if (!nb)
-		return (0);
+	i = ft_strlen(buf) - ft_strlen(ft_strchr(buf, '\n')) + 1;
 	while (buf[i] != '\0')
 	{
-		nb[j] = buf[i];
+		buf[j] = buf[i];
+		buf[i] = '\0';
 		j++;
 		i++;
 	}
-	nb[j] = '\0';
-	free(buf);
-	return (nb);
+	while (buf[j] != '\0')
+	{
+		buf[j] = '\0';
+		j++;
+	}
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*buf;
+	static char	buf[BUFFER_SIZE + 1];
 	char		*zs;
+	int			i;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (0);
-	buf = next_line(buf, fd);
-	if (!buf)
+	i = next_line(buf, fd);
+	if (i == 0)
 		return (0);
 	zs = give_line(buf);
-	buf = nl_buffer(buf);
+	nl_buffer(buf);
 	return (zs);
 }
