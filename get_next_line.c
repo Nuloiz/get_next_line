@@ -6,7 +6,7 @@
 /*   By: nschutz <nschutz@student.42wolfsburg.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 11:48:35 by nschutz           #+#    #+#             */
-/*   Updated: 2023/06/13 10:14:51 by nschutz          ###   ########.fr       */
+/*   Updated: 2023/06/13 12:27:21 by nschutz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@
 	return (zs);
 }*/
 
-int	main(void)
+/*int	main(void)
 {
 	char	*line;
 	int		i;
@@ -101,7 +101,7 @@ int	main(void)
 	close(fd2);
 	close(fd3);
 	return (0);
-}
+}*/
 
 static int	next_line(char *buf, int fd)
 {
@@ -114,7 +114,7 @@ static int	next_line(char *buf, int fd)
 	i = 1;
 	while (!ft_strchr(buf, '\n') && i != 0)
 	{
-		i = (int)read(fd, buf, BUFFER_SIZE + 1);
+		i = (int)read(fd, buf, BUFFER_SIZE);
 		if (i < 0)
 		{
 			free(nl);
@@ -149,7 +149,6 @@ static void	nl_buffer(char *buf)
 	size_t	i;
 	int		j;
 
-	i = 0;
 	j = 0;
 	i = ft_strlen(buf) - ft_strlen(ft_strchr(buf, '\n')) + 1;
 	while (buf[i] != '\0')
@@ -178,6 +177,8 @@ char	*get_next_line(int fd)
 	if (i == 0)
 		return (0);
 	zs = give_line(buf);
+	if (!zs)
+		return (0);
 	nl_buffer(buf);
 	return (zs);
 }
