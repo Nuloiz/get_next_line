@@ -6,7 +6,7 @@
 /*   By: nschutz <nschutz@student.42wolfsburg.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 11:48:35 by nschutz           #+#    #+#             */
-/*   Updated: 2023/06/13 12:27:21 by nschutz          ###   ########.fr       */
+/*   Updated: 2023/06/15 11:19:02 by nschutz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,14 +85,19 @@
 	int		fd1;
 	int		fd2;
 	int		fd3;
+	int		fd4;
+	int 	fd5;
 
 	fd1 = open("tests/test.txt", O_RDONLY);
 	fd2 = open("tests/test2.txt", O_RDONLY);
 	fd3 = open("tests/test3.txt", O_RDONLY);
+	fd4 = open("tests/test4.txt", O_RDONLY);
+	fd5 = open("tests/test5.txt", O_RDONLY);
+
 	i = 1;
 	while (i < 8)
 	{
-		line = get_next_line(fd3);
+		line = get_next_line(fd1);
 		printf("line [%02d]: %s\n", i, line);
 		free(line);
 		i++;
@@ -100,29 +105,22 @@
 	close(fd1);
 	close(fd2);
 	close(fd3);
+	close(fd4);
+	close(fd5);
 	return (0);
 }*/
 
 static int	next_line(char *buf, int fd)
 {
-	char	*nl;
 	int		i;
 
-	nl = (char *) malloc(BUFFER_SIZE + 1);
-	if (!nl)
-		return (0);
 	i = 1;
 	while (!ft_strchr(buf, '\n') && i != 0)
 	{
 		i = (int)read(fd, buf, BUFFER_SIZE);
 		if (i < 0)
-		{
-			free(nl);
-			return (0);
-		}
+			return (i);
 	}
-	buf = ft_strjoin(buf, nl);
-	buf[i] = '\0';
 	return (1);
 }
 
@@ -132,10 +130,13 @@ static char	*give_line(char *buf)
 	char	*zs;
 
 	i = 0;
-	zs = malloc(ft_strlen(buf) - ft_strlen(ft_strchr(buf, '\n')) + 1);
+	if (!ft_strchr(buf, '\n'))
+		zs = malloc(ft_strlen(buf) + 1);
+	else
+		zs = malloc(ft_strlen(buf) - ft_strlen(ft_strchr(buf, '\n')) + 2);
 	if (!zs)
 		return (0);
-	while (buf[i] != '\n' && buf[i] != '\0')
+	while (buf[i - 1] != '\n' && buf[i] != '\0')
 	{
 		zs[i] = buf[i];
 		i++;
@@ -144,13 +145,19 @@ static char	*give_line(char *buf)
 	return (zs);
 }
 
-static void	nl_buffer(char *buf)
+static int	nl_buffer(char *buf)
 {
 	size_t	i;
 	int		j;
 
+	i = 0;
 	j = 0;
-	i = ft_strlen(buf) - ft_strlen(ft_strchr(buf, '\n')) + 1;
+	if (!buf[i])
+		return (0);
+	if (!ft_strchr(buf, '\n'))
+		i = ft_strlen(buf);
+	else
+		i = ft_strlen(buf) - ft_strlen(ft_strchr(buf, '\n')) + 1;
 	while (buf[i] != '\0')
 	{
 		buf[j] = buf[i];
@@ -163,6 +170,7 @@ static void	nl_buffer(char *buf)
 		buf[j] = '\0';
 		j++;
 	}
+	return (1);
 }
 
 char	*get_next_line(int fd)
@@ -171,14 +179,22 @@ char	*get_next_line(int fd)
 	char		*zs;
 	int			i;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 != 0)
 		return (0);
 	i = next_line(buf, fd);
-	if (i == 0)
-		return (0);
+	if (i <= 0)
+		return (NULL);
 	zs = give_line(buf);
 	if (!zs)
+	{
+		free(zs);
 		return (0);
-	nl_buffer(buf);
+	}
+	i = nl_buffer(buf);
+	if (i == 0)
+	{
+		free(zs);
+		return (NULL);
+	}
 	return (zs);
 }
