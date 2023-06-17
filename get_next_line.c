@@ -6,7 +6,7 @@
 /*   By: nschutz <nschutz@student.42wolfsburg.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 11:48:35 by nschutz           #+#    #+#             */
-/*   Updated: 2023/06/15 11:19:02 by nschutz          ###   ########.fr       */
+/*   Updated: 2023/06/17 13:22:57 by nschutz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@
 	i = 1;
 	while (i < 8)
 	{
-		line = get_next_line(fd1);
+		line = get_next_line(fd2);
 		printf("line [%02d]: %s\n", i, line);
 		free(line);
 		i++;
@@ -110,18 +110,35 @@
 	return (0);
 }*/
 
-static int	next_line(char *buf, int fd)
+static char	*next_line(char *buf, int fd)
 {
 	int		i;
+	char	*tmp;
+	char	*a;
+	char	*s;
 
 	i = 1;
-	while (!ft_strchr(buf, '\n') && i != 0)
+	s = NULL;
+	a = (char *)malloc(BUFFER_SIZE + 1);
+	a[0] = '\0';
+	while (!ft_strchr(a, '\n') && i != 0)
 	{
-		i = (int)read(fd, buf, BUFFER_SIZE);
+		i = (int)read(fd, a, BUFFER_SIZE);
 		if (i < 0)
-			return (i);
+			return (0);
+		tmp = ft_strjoin(s, a);
+		if (!tmp)
+		{
+			free (a);
+			return (0);
+		}
+		free (s);
+		s = tmp;
+		free (tmp);
 	}
-	return (1);
+	buf = s;
+	free (s);
+	return (buf);
 }
 
 static char	*give_line(char *buf)
@@ -175,24 +192,25 @@ static int	nl_buffer(char *buf)
 
 char	*get_next_line(int fd)
 {
-	static char	buf[BUFFER_SIZE + 1];
+	static char	*buf;
 	char		*zs;
 	int			i;
 
 	if (fd < 0 != 0)
 		return (0);
-	i = next_line(buf, fd);
-	if (i <= 0)
+	buf = next_line(buf, fd);
+	if (!buf)
 		return (NULL);
 	zs = give_line(buf);
 	if (!zs)
 	{
-		free(zs);
+		free (buf);
 		return (0);
 	}
 	i = nl_buffer(buf);
 	if (i == 0)
 	{
+		free (buf);
 		free(zs);
 		return (NULL);
 	}
