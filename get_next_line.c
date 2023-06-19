@@ -6,7 +6,7 @@
 /*   By: nschutz <nschutz@student.42wolfsburg.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 11:48:35 by nschutz           #+#    #+#             */
-/*   Updated: 2023/06/17 13:22:57 by nschutz          ###   ########.fr       */
+/*   Updated: 2023/06/19 10:24:17 by nschutz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@
 	return (zs);
 }*/
 
-/*int	main(void)
+int	main(void)
 {
 	char	*line;
 	int		i;
@@ -108,36 +108,37 @@
 	close(fd4);
 	close(fd5);
 	return (0);
-}*/
+}
 
-static char	*next_line(char *buf, int fd)
+static char	*ft_free(char *to_free)
 {
-	int		i;
-	char	*tmp;
-	char	*a;
-	char	*s;
+	free(to_free);
+	return (NULL);
+}
 
+char	*next_line(char *buf, int fd)
+{
+	char	*tmp;
+	char	*s;
+	int		i;
+
+	tmp = (char *)malloc((BUFFER_SIZE + 1));
+	if (!tmp)
+		return (NULL);
 	i = 1;
-	s = NULL;
-	a = (char *)malloc(BUFFER_SIZE + 1);
-	a[0] = '\0';
-	while (!ft_strchr(a, '\n') && i != 0)
+	while (!ft_strchr(tmp, '\n') && i != 0)
 	{
-		i = (int)read(fd, a, BUFFER_SIZE);
-		if (i < 0)
-			return (0);
-		tmp = ft_strjoin(s, a);
-		if (!tmp)
-		{
-			free (a);
-			return (0);
-		}
-		free (s);
-		s = tmp;
-		free (tmp);
+		i = (int)read(fd, tmp, BUFFER_SIZE);
+		if (i == -1)
+			return (ft_free(tmp));
+		tmp[i] = '\0';
+		free (buf);
+		buf = ft_strjoin(s, tmp);
+		if (!buf)
+			return (ft_free(tmp));
+		s = buf;
 	}
-	buf = s;
-	free (s);
+	free(tmp);
 	return (buf);
 }
 
@@ -203,16 +204,12 @@ char	*get_next_line(int fd)
 		return (NULL);
 	zs = give_line(buf);
 	if (!zs)
-	{
-		free (buf);
-		return (0);
-	}
+		return (ft_free(buf));
 	i = nl_buffer(buf);
 	if (i == 0)
 	{
 		free (buf);
-		free(zs);
-		return (NULL);
+		return (ft_free(zs));
 	}
 	return (zs);
 }

@@ -24,21 +24,19 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-char	*ft_strchr(const char *s, int c)
+char	*ft_strchr(char *s, int c)
 {
 	size_t			j;
-	char			*mem;
 	unsigned char	i;
 
 	j = 0;
 	i = (unsigned char)c;
-	if (c < 0 || c > 127)
+	if (!s)
 		return (0);
-	mem = (char *)s;
 	while (j < ft_strlen(s))
 	{
-		if (mem[j] == i)
-			return (&mem[j]);
+		if (s[j] == i)
+			return (&s[j]);
 		j++;
 	}
 	return (0);
@@ -71,7 +69,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	i = 0;
 	j = 0;
 	if (!s1)
-		return (ft_strdup((char *)s2));
+		return ((char *)s2);
 	c = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (s2 && c)
 	{
