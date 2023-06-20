@@ -24,6 +24,23 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
+char	*ft_calloc(int size, int count)
+{
+	int		i;
+	char	*out;
+
+	out = malloc(size * count);
+	if (out == NULL)
+		return (NULL);
+	i = 0;
+	while (i < size * count)
+	{
+		out[i] = 0;
+		i ++;
+	}
+	return (out);
+}
+
 char	*ft_strchr(char *s, int c)
 {
 	size_t			j;
@@ -60,7 +77,7 @@ char	*ft_strdup(char *s)
 	return (ptr);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char const *s2)
 {
 	int		i;
 	int		j;
@@ -69,7 +86,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	i = 0;
 	j = 0;
 	if (!s1)
-		return ((char *)s2);
+		return (ft_strdup((char *)s2));
 	c = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (s2 && c)
 	{
@@ -79,11 +96,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 			i++;
 		}
 		while (s2[j])
-		{
-			c[i] = s2[j];
-			i++;
-			j++;
-		}
+			c[i++] = s2[j++];
 		c[i] = '\0';
 		return (c);
 	}
